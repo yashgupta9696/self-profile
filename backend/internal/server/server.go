@@ -18,7 +18,7 @@ import (
 func New(cfg config.Config, store *content.Store) http.Handler {
 	handlers := api.Handlers{
 		Profile: store,
-		Contact: contact.Service{Sink: contact.LogSink{}},
+		Contact: contact.Service{Sink: contact.NewSink(cfg.ResendAPIKey, cfg.MailFrom, cfg.ContactEmail)},
 		Limit:   ratelimit.New(8, time.Hour),
 	}
 

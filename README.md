@@ -100,10 +100,12 @@ Render **pulls** the image. It does **not** run `docker build`, so Hobby **pipel
 2. Create the Render service **once** (Blueprint or manual — below). The first image pull can fail until CI has published to GHCR; that is expected.
 3. After the first successful image push: GitHub → **Packages** → this image → **Package settings** → visibility **Public**, so Render can pull without registry credentials.
 4. Render service → **Settings** → copy **Deploy Hook**.
-5. GitHub repo → **Settings → Secrets and variables → Actions** → `RENDER_DEPLOY_HOOK`.
+5. GitHub repo → **Settings → Secrets and variables → Actions** → **Secrets** → `RENDER_DEPLOY_HOOK`.
 6. Add secrets on the **service** (not in git): Render → **`self-profile`** → **Environment** → **Environment Variables** → **+ Add**. At least `RESEND_API_KEY` for contact mail (HTTPS API). Do **not** use **Secret Files** for this — the app reads env vars, not `/etc/secrets/`.
 7. Save with **Save and deploy** so the running process picks up new env. **Save only** waits until the next deploy.
-8. Optional: ping `GET /api/health` every 5–10 minutes (UptimeRobot, cron-job.org) so Free instances do not spin down after 15 minutes idle.
+8. Custom domain + keep-alive (already done for this site): the domain was bought on [Hostinger](https://www.hostinger.com/) and DNS there points at the Render service. The custom domain is also added in Render ([custom domains](https://render.com/docs/custom-domains)). That does **not** replace `*.onrender.com` — it is an extra hostname for the same service.
+
+   [UptimeRobot](https://uptimerobot.com/) is registered **manually** against the **custom domain** (`GET /api/health`, 5-minute HTTP monitor). CI does not create or ping that monitor. The pings also stop Free instances spinning down after 15 minutes idle. A keep-alive that never idles uses ~744 of the **750** Free instance hours in a 31-day month.
 
 After this, every push to `main` (except markdown-only) rebuilds/pushes the image and hits the hook. You do not recreate the service.
 
@@ -131,9 +133,11 @@ Same result without Blueprint:
 
 Free web services **block outbound SMTP** (ports **25, 465, 587**). There is no Render mailbox. Paid instances can use 465/587; port 25 stays blocked. Gmail SMTP from cloud IPs is unreliable anyway.
 
-Use an **HTTPS** provider (port 443), e.g. [Resend](https://resend.com). Put **`RESEND_API_KEY`** only in Render **Environment**. Verify a **from** address with the provider (`MAIL_FROM` when wired). `CONTACT_EMAIL` is the inbox that receives form submissions.
+Use an **HTTPS** provider (port 443), e.g. [Resend](https://resend.com). Put **`RESEND_API_KEY`** only in Render **Environment**. Default **`MAIL_FROM`** is `onboarding@resend.dev` (Resend’s test sender). `CONTACT_EMAIL` is the inbox that receives form submissions.
 
-Until the API key is set, `POST /api/contact` still validates; delivery depends on the mail sink being configured.
+Until the domain is verified at Resend, mail can only go **to the Resend account email**. After you verify the Hostinger domain, set `MAIL_FROM` to something like `support@yourdomain` (Render env) and redeploy.
+
+If `RESEND_API_KEY` is unset, `POST /api/contact` still validates and logs; it does not send mail. Adding the key in Render does nothing until this code is deployed (image rebuild + deploy hook).
 
 ### Cal.com
 

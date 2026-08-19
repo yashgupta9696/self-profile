@@ -2,6 +2,13 @@ package contact
 
 import "testing"
 
+func TestNewSinkLogsWithoutKey(t *testing.T) {
+	s := NewSink("", "onboarding@resend.dev", "lifesshake@gmail.com")
+	if _, ok := s.(LogSink); !ok {
+		t.Fatalf("expected LogSink, got %T", s)
+	}
+}
+
 func TestMessageValidate(t *testing.T) {
 	ok := Message{Name: "Ada", Email: "ada@example.com", Message: "hello"}
 	if err := ok.Normalized().Validate(); err != nil {

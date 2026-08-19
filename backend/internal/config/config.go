@@ -9,6 +9,8 @@ type Config struct {
 	CalUsername   string
 	CalEventSlug  string
 	ContactEmail  string
+	ResendAPIKey  string
+	MailFrom      string
 }
 
 func FromEnv() Config {
@@ -20,6 +22,8 @@ func FromEnv() Config {
 		CalUsername:   os.Getenv("CAL_USERNAME"),
 		CalEventSlug:  os.Getenv("CAL_EVENT_SLUG"),
 		ContactEmail:  os.Getenv("CONTACT_EMAIL"),
+		ResendAPIKey:  os.Getenv("RESEND_API_KEY"),
+		MailFrom:      envOr("MAIL_FROM", "onboarding@resend.dev"),
 	}
 }
 

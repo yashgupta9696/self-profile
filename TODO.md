@@ -4,11 +4,11 @@ Follow-ups from the profile-site setup. Check these off as they land.
 
 ## Domain and email
 
-- [ ] Buy the domain and attach it in Render ([custom domains](https://render.com/docs/custom-domains)).
+- [x] Buy the domain on Hostinger, point DNS at Render, and add it as a custom domain. The `*.onrender.com` URL stays.
 - [ ] Replace `CONTACT_EMAIL` / site email (`lifesshake@gmail.com`) with a `support@` mailbox on that domain.
   - Env: `CONTACT_EMAIL` in `render.yaml` / Docker.
   - Also update `backend/internal/content/profile.json` and `frontend/data/profile.json`.
-- [ ] Wire `POST /api/contact` to actually send mail (SMTP or a provider). It currently validates and logs only.
+- [x] Wire `POST /api/contact` through Resend (`RESEND_API_KEY`, `MAIL_FROM`, `CONTACT_EMAIL`). Until a domain is verified, Resend only allows `From: onboarding@resend.dev` to the account owner.
 
 ## Calendar
 
@@ -42,9 +42,9 @@ GitHub Actions tests on PRs/pushes, then on `main` builds the Docker image, push
 
 ### Keep-alive (optional)
 
-Render Free spins down after **15 minutes** with no HTTP traffic. Ping **`GET /api/health`** every **5–10 minutes** from UptimeRobot / cron-job.org (not GitHub Actions).
+Render Free spins down after **15 minutes** with no HTTP traffic. UptimeRobot is set up **manually** on the custom domain (`GET /api/health` every 5 minutes). Not GitHub Actions.
 
-- [ ] Point an external monitor at `https://<service>.onrender.com/api/health`.
+- [x] HTTP monitor on the custom domain `/api/health` in UptimeRobot.
 - [ ] One always-on Free service uses ~744 of **750** instance hours in a 31-day month — do not add a second Free web service.
 
 ## Monitoring
