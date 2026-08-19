@@ -1,0 +1,172 @@
+{
+  "name": "Yash Gupta",
+  "headline": "Backend Engineer",
+  "tagline": "Scalable systems, microservices, and data engineering — storage, media, SaaS, search, and analytics.",
+  "location": "Bengaluru, India",
+  "summary": "I like taking messy production systems — analytics pipelines, metadata services, storage platforms — and making them cheaper, faster, and calmer under load. 7+ years across HPE, Sling, Bloomreach, Kong, and now Apple.",
+  "about": [
+    "Hi, I'm Yash Gupta, a backend engineer in Bengaluru. I grew up curious about how systems hold together — Linux boxes, storage arrays, then the APIs and pipelines that sit on top.",
+    "Most of my work has been the unglamorous kind that actually moves the needle: migrating Python 2 estates, cutting cloud spend by more than a million a year, redesigning playback and image services so they take 5× the traffic on the same boxes.",
+    "Away from the keyboard I follow equities, tinker with new tools, and keep notes so the next problem is a little less surprising. The field doesn't end, and that's the point."
+  ],
+  "email": "lifesshake@gmail.com",
+  "socials": {
+    "github": "https://github.com/yashgupta9696",
+    "linkedin": "https://www.linkedin.com/in/yashgupta9696/",
+    "twitter": "https://x.com/yash_dscale",
+    "youtube": null,
+    "cal": "https://cal.com/lifesshake/profile-connect-meeting"
+  },
+  "calUsername": "lifesshake",
+  "calEventSlug": "profile-connect-meeting",
+  "skillGroups": [
+    {
+      "title": "Languages & APIs",
+      "items": ["Java", "Go", "Python", "REST", "WebSockets", "gRPC"]
+    },
+    {
+      "title": "Data & Messaging",
+      "items": ["Kafka", "SQS", "RabbitMQ", "Redis", "Memcached", "Airflow", "Spark", "Hadoop"]
+    },
+    {
+      "title": "Cloud & Platform",
+      "items": ["Kubernetes", "Docker", "Helm", "Terraform", "Terragrunt", "Ansible", "GitHub Actions", "GitLab CI"]
+    },
+    {
+      "title": "Databases",
+      "items": ["PostgreSQL", "MySQL", "Redshift", "DynamoDB", "Cassandra", "Neo4j"]
+    },
+    {
+      "title": "Observability",
+      "items": ["Grafana", "Prometheus", "New Relic", "Datadog", "PagerDuty", "SonarQube"]
+    },
+    {
+      "title": "Domains",
+      "items": ["Microservices", "SAN / Storage", "Media CMS", "Analytics", "Search / e-commerce"]
+    }
+  ],
+  "experience": [
+    {
+      "company": "Apple",
+      "location": "Bengaluru, India",
+      "roles": [
+        {
+          "title": "Software Engineer",
+          "start": "Oct 2025",
+          "end": "Present",
+          "highlights": [
+            "Building backend systems as part of Apple's engineering organization in Bengaluru."
+          ],
+          "tech": ["Go", "Python", "Distributed systems"]
+        }
+      ]
+    },
+    {
+      "company": "Kong",
+      "location": "Bengaluru, India",
+      "roles": [
+        {
+          "title": "Software Engineer",
+          "start": "Jul 2025",
+          "end": "Oct 2025",
+          "highlights": [
+            "Worked on API gateway and service-mesh problems in a short, high-intensity stint."
+          ],
+          "tech": ["Go", "APIs", "Cloud"]
+        }
+      ]
+    },
+    {
+      "company": "Bloomreach",
+      "location": "Remote — Bengaluru",
+      "roles": [
+        {
+          "title": "Senior Software Engineer",
+          "start": "Aug 2022",
+          "end": "Jul 2025",
+          "highlights": [
+            "Investigated and optimized analytics pipelines and jobs, saving about $1.1M per year.",
+            "Part of the analytics team processing on the order of 7 million events at peak.",
+            "Led Events Management: pixel-quality analysis dropped from ~1 day to under 10 seconds; designed the Events Management API and real-time ingestion path.",
+            "Independently led the Python 3 migration (plus arm64, Ubuntu 22.04, Airflow 1.3 → 2.4) in under 4 months, ~$20k/year savings and a cleaner security story.",
+            "Mentored junior engineers while shipping features on daily/hourly pipelines."
+          ],
+          "tech": ["Java", "Go", "Python", "Spark", "MapReduce", "Airflow", "Kafka", "Redshift", "PostgreSQL", "AWS", "Terraform", "Ansible"]
+        }
+      ]
+    },
+    {
+      "company": "Sling Media (DISH Network Technologies)",
+      "location": "Bengaluru, India",
+      "roles": [
+        {
+          "title": "Senior Software Engineer",
+          "start": "May 2022",
+          "end": "Jun 2022",
+          "highlights": [
+            "CMS team: schedules, channels, programs, series, and images for internal and external Sling systems.",
+            "Spot Awards for two consecutive quarters."
+          ],
+          "tech": ["Go", "Python", "Kubernetes", "DynamoDB", "Kafka", "gRPC", "New Relic"]
+        },
+        {
+          "title": "Software Engineer II",
+          "start": "Apr 2021",
+          "end": "May 2022",
+          "highlights": [
+            "Co-led the Player Metadata Service redesign: QVT support, 5× RPS on similar resources, API latency under 200ms (~50% faster playback start).",
+            "Led Image Service redesign: real-time resize, compression, gradients, and overlays in under 2 months, also at 5× RPS.",
+            "Key contributor moving metadata from TiVo to Gracenote."
+          ],
+          "tech": ["Go", "Python", "Kubernetes", "DynamoDB", "Kafka", "gRPC"]
+        }
+      ]
+    },
+    {
+      "company": "Hewlett Packard Enterprise",
+      "location": "Bengaluru, India",
+      "roles": [
+        {
+          "title": "Systems / Software Engineer II",
+          "start": "Apr 2020",
+          "end": "Apr 2021",
+          "highlights": [
+            "Core team for Recovery Manager (RMC): on-prem service architecture moved toward cloud microservices.",
+            "POCs for production web-service designs: Go/FastAPI, gRPC, Kafka, OpenStack TaskFlow, APScheduler.",
+            "Copy-data management revamp in under 7 days: restart time −80%, new storage-system add ~30s → ~5s.",
+            "Led Python 2.7 → 3.6 migration for the whole codebase in under 3.5 months.",
+            "Six recognition rewards during the HPE tenure."
+          ],
+          "tech": ["Python", "Go", "Kubernetes", "PostgreSQL", "RabbitMQ", "OpenStack Cinder", "SAN"]
+        },
+        {
+          "title": "Systems / Software Engineer",
+          "start": "Jul 2018",
+          "end": "Apr 2020",
+          "highlights": [
+            "Storage division: snapshots, backups, restores, volumes, FC/iSCSI — Recovery Manager Central on Cinder."
+          ],
+          "tech": ["Python", "OpenStack Cinder", "SAN"]
+        }
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "VIT University, Vellore",
+      "credential": "B.Tech. Information Technology",
+      "dates": "2014 — 2018",
+      "notes": [
+        "CGPA 9.46",
+        "Merit holder 2014–17 (2nd rank, then 3rd rank consecutively)",
+        "Programme Representative, B.Tech. IT 2014 batch (2015–18)"
+      ]
+    },
+    {
+      "school": "Gyan Vihar School",
+      "credential": "Senior secondary, Science / Maths",
+      "dates": "2012 — 2014",
+      "notes": ["Class XII: 92%", "House representative for 2 years"]
+    }
+  ]
+}

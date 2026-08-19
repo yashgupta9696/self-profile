@@ -82,26 +82,76 @@ Single container from the root `Dockerfile` — no hot reload.
 
 ## Production (GitHub → GHCR → Render)
 
-See `.github/workflows/ci.yml`.
+See `.github/workflows/ci.yml` and `render.yaml`.
 
-1. Public GitHub repo; default branch `main`.
-2. Create a **Free** Render service with **Existing image** (`render.yaml`, `runtime: image`).
-3. Repo secret `RENDER_DEPLOY_HOOK`.
-4. After the first image push, set the GHCR package to **Public**.
-5. Optional: ping `GET /api/health` every 5–10 minutes (UptimeRobot, etc.) so Free instances do not spin down.
+GitHub Actions **does not** create the Render service and **does not** apply `render.yaml`. CI tests, builds the Docker image, pushes it to GHCR, then calls a **deploy hook** on a service that already exists. `render.yaml` is a [Render Blueprint](https://render.com/docs/blueprint-spec): Render reads it only when **you** apply it in the dashboard.
 
-Health check: `/api/health`. Render sets `PORT` (default `10000`).
+| Piece | Role |
+|---|---|
+| **GitHub Actions** | Test → `docker build` → push `ghcr.io/<owner>/<repo>` → `curl` **`RENDER_DEPLOY_HOOK`** with `imgURL=<digest>` |
+| **`render.yaml`** | Recipe: `runtime: image`, Free plan, image URL, health check, non-secret env vars |
+| **Deploy hook** | Tells that **existing** service to pull a new image. It does not provision anything |
+
+Render **pulls** the image. It does **not** run `docker build`, so Hobby **pipeline minutes** stay almost unused. Builds use GitHub Actions minutes instead.
+
+### One-time setup
+
+1. Public GitHub repo; default branch `main`. Fork or copy this project, then change `render.yaml` `image.url` to `ghcr.io/<your-github-owner>/<your-repo>:latest` (lowercase).
+2. Create the Render service **once** (Blueprint or manual — below). The first image pull can fail until CI has published to GHCR; that is expected.
+3. After the first successful image push: GitHub → **Packages** → this image → **Package settings** → visibility **Public**, so Render can pull without registry credentials.
+4. Render service → **Settings** → copy **Deploy Hook**.
+5. GitHub repo → **Settings → Secrets and variables → Actions** → `RENDER_DEPLOY_HOOK`.
+6. Add secrets on the **service** (not in git): Render → **`self-profile`** → **Environment** → **Environment Variables** → **+ Add**. At least `RESEND_API_KEY` for contact mail (HTTPS API). Do **not** use **Secret Files** for this — the app reads env vars, not `/etc/secrets/`.
+7. Save with **Save and deploy** so the running process picks up new env. **Save only** waits until the next deploy.
+8. Optional: ping `GET /api/health` every 5–10 minutes (UptimeRobot, cron-job.org) so Free instances do not spin down after 15 minutes idle.
+
+After this, every push to `main` (except markdown-only) rebuilds/pushes the image and hits the hook. You do not recreate the service.
+
+Health check: `/api/health`. Render sets `PORT`.
+
+### Create the service: Blueprint (recommended)
+
+Uses `render.yaml` as-is.
+
+1. [dashboard.render.com](https://dashboard.render.com/) → **New** → **Blueprint**.
+2. Connect this GitHub repo. Render creates **`self-profile`** (`plan: free`, `runtime: image`, `healthCheckPath: /api/health`, `autoDeployTrigger: off`).
+3. Non-secret env from the blueprint (`CAL_*`, `CONTACT_EMAIL`, `STATIC_DIR`) is applied. Add `RESEND_API_KEY` in the dashboard (step 6 above). If you later re-apply the blueprint, keep dashboard secrets; do not put API keys in `render.yaml` as `value:`.
+
+### Create the service: manual
+
+Same result without Blueprint:
+
+1. **New** → **Web Service** → **Deploy an existing image** (not “build from Dockerfile”).
+2. Image: `ghcr.io/<owner>/<repo>:latest`.
+3. Instance: **Free**, one instance. Health check `/api/health`.
+4. Set the env vars in the table below (plus `RESEND_API_KEY`).
+5. Then deploy hook + GitHub secret, same as steps 4–6 above.
+
+### Email on Render (contact form)
+
+Free web services **block outbound SMTP** (ports **25, 465, 587**). There is no Render mailbox. Paid instances can use 465/587; port 25 stays blocked. Gmail SMTP from cloud IPs is unreliable anyway.
+
+Use an **HTTPS** provider (port 443), e.g. [Resend](https://resend.com). Put **`RESEND_API_KEY`** only in Render **Environment**. Verify a **from** address with the provider (`MAIL_FROM` when wired). `CONTACT_EMAIL` is the inbox that receives form submissions.
+
+Until the API key is set, `POST /api/contact` still validates; delivery depends on the mail sink being configured.
+
+### Cal.com
+
+Set `CAL_USERNAME` and `CAL_EVENT_SLUG` to your Cal.com user and event type. The site embeds `https://cal.com/<username>/<event>`. If **your** name and email appear on the booking form while testing, you are logged into Cal.com in that browser — visitors see empty fields.
 
 ## Env vars
 
-| Variable | Purpose |
-| --- | --- |
-| `PORT` | Listen port (Render provides this) |
-| `STATIC_DIR` | Exported Next.js `out/` (`/app/static` in Docker) |
-| `CAL_USERNAME` | Cal.com username (default `lifesshake`) |
-| `CONTACT_EMAIL` | Address shown on the site |
-| `ALLOWED_ORIGIN` | CORS allowlist for local Next if you call Go on `:10000` from the browser |
-| `API_UPSTREAM` | Next dev proxy target (default `http://127.0.0.1:10000`; compose sets `http://backend:10000`) |
+| Variable | Where | Purpose |
+|---|---|---|
+| `PORT` | Render (automatic) | Listen port |
+| `STATIC_DIR` | `render.yaml` | Exported Next.js `out/` (`/app/static` in Docker) |
+| `CAL_USERNAME` | `render.yaml` / Docker | Cal.com username |
+| `CAL_EVENT_SLUG` | `render.yaml` / Docker | Event type slug |
+| `CONTACT_EMAIL` | `render.yaml` / Docker | Address shown on the site and mail destination |
+| `RESEND_API_KEY` | Render dashboard only | Contact mail over HTTPS. Never commit |
+| `MAIL_FROM` | Render dashboard (when used) | Verified sender at the mail provider |
+| `ALLOWED_ORIGIN` | Local only | CORS if the browser calls Go on `:10000` |
+| `API_UPSTREAM` | Next **dev** only | Proxy target (default `http://127.0.0.1:10000`; compose `http://backend:10000`) |
 
 ## Layout
 

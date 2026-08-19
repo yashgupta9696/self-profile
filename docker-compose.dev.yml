@@ -1,0 +1,37 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "10000:10000"
+    volumes:
+      - ./backend:/src
+      - backend_go_mod:/go/pkg/mod
+    environment:
+      PORT: "10000"
+      CAL_USERNAME: lifesshake
+      CAL_EVENT_SLUG: profile-connect-meeting
+      CONTACT_EMAIL: lifesshake@gmail.com
+      ALLOWED_ORIGIN: http://localhost:3000
+    # No STATIC_DIR — API only; Next serves the UI in dev.
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/web
+      - frontend_node_modules:/web/node_modules
+    environment:
+      WATCHPACK_POLLING: "true"
+      API_UPSTREAM: http://backend:10000
+    depends_on:
+      - backend
+    command: sh -c "npm install && npm run dev"
+
+volumes:
+  frontend_node_modules:
+  backend_go_mod:

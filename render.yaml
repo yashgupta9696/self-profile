@@ -1,0 +1,35 @@
+# Render Blueprint — pull a prebuilt image (built in GitHub Actions).
+# https://render.com/docs/deploying-an-image
+# https://render.com/docs/free
+#
+# GitHub Actions builds/pushes ghcr.io/<owner>/<repo> and calls RENDER_DEPLOY_HOOK.
+# Render does not run `docker build`, so Hobby pipeline minutes stay almost unused.
+# autoDeployTrigger is off: image services do not Git-auto-deploy.
+#
+# Public repo: after the first CI push, set the GHCR package to Public.
+# Render then pulls without registry credentials. Keep `creds` commented.
+#
+# Limits: plan free, 1 instance, no PR previews.
+
+services:
+  - type: web
+    name: self-profile
+    runtime: image
+    plan: free
+    numInstances: 1
+    healthCheckPath: /api/health
+    autoDeployTrigger: off
+    image:
+      url: ghcr.io/yashgupta9696/self-profile:latest
+      # creds:
+      #   fromRegistryCreds:
+      #     name: ghcr
+    envVars:
+      - key: CAL_USERNAME
+        value: lifesshake
+      - key: CAL_EVENT_SLUG
+        value: profile-connect-meeting
+      - key: CONTACT_EMAIL
+        value: lifesshake@gmail.com
+      - key: STATIC_DIR
+        value: /app/static
