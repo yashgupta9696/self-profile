@@ -102,7 +102,7 @@ Render **pulls** the image. It does **not** run `docker build`, so Hobby **pipel
 4. Render service → **Settings** → copy **Deploy Hook**.
 5. GitHub repo → **Settings → Secrets and variables → Actions** → **Secrets** → `RENDER_DEPLOY_HOOK`.
 6. Add secrets on the **service** (not in git): Render → **`self-profile`** → **Environment** → **Environment Variables** → **+ Add**. At least `RESEND_API_KEY` for contact mail (HTTPS API). Do **not** use **Secret Files** for this — the app reads env vars, not `/etc/secrets/`.
-7. Save with **Save and deploy** so the running process picks up new env. **Save only** waits until the next deploy.
+7. Image URL in Render **Settings** must stay `ghcr.io/<owner>/<repo>:latest` (same as `render.yaml`). Do **not** pin a git SHA tag. The deploy hook’s `imgURL` (digest) applies to **that** deploy only. **Save and deploy** after an env change rebuilds from the **configured** image URL — if that URL is still an old SHA, Render rolls back the hook deploy (env is kept, code is not). **Save only** waits for the next hook.
 8. Custom domain + keep-alive (already done for this site): the domain was bought on [Hostinger](https://www.hostinger.com/) and DNS there points at the Render service. The custom domain is also added in Render ([custom domains](https://render.com/docs/custom-domains)). That does **not** replace `*.onrender.com` — it is an extra hostname for the same service.
 
    [UptimeRobot](https://uptimerobot.com/) is registered **manually** against the **custom domain** (`GET /api/health`, 5-minute HTTP monitor). CI does not create or ping that monitor. The pings also stop Free instances spinning down after 15 minutes idle. A keep-alive that never idles uses ~744 of the **750** Free instance hours in a 31-day month.
@@ -133,7 +133,15 @@ Same result without Blueprint:
 
 Free web services **block outbound SMTP** (ports **25, 465, 587**). There is no Render mailbox. Paid instances can use 465/587; port 25 stays blocked. Gmail SMTP from cloud IPs is unreliable anyway.
 
-Use an **HTTPS** provider (port 443), e.g. [Resend](https://resend.com). Put **`RESEND_API_KEY`** only in Render **Environment**. Default **`MAIL_FROM`** is `onboarding@resend.dev` (Resend’s test sender). `CONTACT_EMAIL` is the inbox that receives form submissions.
+Use an **HTTPS** provider (port 443), e.g. [Resend](https://resend.com). Put **`RESEND_API_KEY`** only in Render **Environment**. Default **`MAIL_FROM`** is `onboarding@resend.dev` (Resend’s test sender).
+
+**`CONTACT_EMAIL` is optional.** It is **your inbox** (Resend `To`), not the visitor’s address. If unset, mail goes to `email` in `backend/internal/content/profile.json` (`lifesshake@gmail.com`). Set `CONTACT_EMAIL` only to override that. The address they type in the form is **Reply-To** (and in the body), so you can reply to them.
+
+| Field | Value |
+|---|---|
+| To | `CONTACT_EMAIL`, else `profile.json` `email` |
+| From | `MAIL_FROM` (default `onboarding@resend.dev`) |
+| Reply-To | Submitter’s email from the form |
 
 Until the domain is verified at Resend, mail can only go **to the Resend account email**. After you verify the Hostinger domain, set `MAIL_FROM` to something like `support@yourdomain` (Render env) and redeploy.
 
@@ -151,7 +159,7 @@ Set `CAL_USERNAME` and `CAL_EVENT_SLUG` to your Cal.com user and event type. The
 | `STATIC_DIR` | `render.yaml` | Exported Next.js `out/` (`/app/static` in Docker) |
 | `CAL_USERNAME` | `render.yaml` / Docker | Cal.com username |
 | `CAL_EVENT_SLUG` | `render.yaml` / Docker | Event type slug |
-| `CONTACT_EMAIL` | `render.yaml` / Docker | Address shown on the site and mail destination |
+| `CONTACT_EMAIL` | Render / `render.yaml` (optional) | **Your** inbox for form mail. Unset = `profile.json` `email`. Not the sender. |
 | `RESEND_API_KEY` | Render dashboard only | Contact mail over HTTPS. Never commit |
 | `MAIL_FROM` | Render dashboard (when used) | Verified sender at the mail provider |
 | `ALLOWED_ORIGIN` | Local only | CORS if the browser calls Go on `:10000` |

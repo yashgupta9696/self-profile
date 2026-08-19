@@ -42,3 +42,8 @@ func Load(calUsername, calEventSlug, contactEmail string) (*Store, error) {
 func (s *Store) Profile() any {
 	return s.profile
 }
+
+func (s *Store) Email() string {
+	email, _ := s.profile["email"].(string)
+	return email
+}

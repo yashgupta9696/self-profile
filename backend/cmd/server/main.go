@@ -16,9 +16,16 @@ func main() {
 	if err != nil {
 		log.Fatalf("content: %v", err)
 	}
+	if cfg.ContactEmail == "" {
+		cfg.ContactEmail = store.Email()
+	}
 
 	h := server.New(cfg, store)
-	log.Printf("listening on %s (static=%s)", cfg.Addr, cfg.StaticDir)
+	mailer := "log"
+	if cfg.ResendAPIKey != "" && cfg.ContactEmail != "" {
+		mailer = "resend"
+	}
+	log.Printf("listening on %s (static=%s mailer=%s to=%s)", cfg.Addr, cfg.StaticDir, mailer, cfg.ContactEmail)
 	if err := http.ListenAndServe(cfg.Addr, h); err != nil {
 		log.Fatal(err)
 	}

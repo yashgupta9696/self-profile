@@ -19,7 +19,14 @@ func NewSink(apiKey, from, to string) Sink {
 		from = "onboarding@resend.dev"
 	}
 	if apiKey == "" || to == "" {
-		log.Print("contact: logging only (set RESEND_API_KEY and CONTACT_EMAIL to send mail)")
+		missing := []string{}
+		if apiKey == "" {
+			missing = append(missing, "RESEND_API_KEY")
+		}
+		if to == "" {
+			missing = append(missing, "CONTACT_EMAIL")
+		}
+		log.Printf("contact: logging only (missing %s)", strings.Join(missing, ", "))
 		return LogSink{}
 	}
 	log.Printf("contact: Resend enabled from=%s to=%s", from, to)
